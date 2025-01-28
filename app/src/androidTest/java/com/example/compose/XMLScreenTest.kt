@@ -13,6 +13,7 @@ class XMLScreenTest {
 
     @Test
     fun verifyXMLTitle(){
+
         rule.activity.runOnUiThread{
             var textView = rule.activity.findViewById<TextView>(R.id.sample_text)
             assertEquals("Updated Text from Compose",textView.text.toString())
