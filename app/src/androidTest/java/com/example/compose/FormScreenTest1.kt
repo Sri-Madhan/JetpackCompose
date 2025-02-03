@@ -1,10 +1,6 @@
 package com.example.compose
 
 
-import android.app.AlertDialog
-import android.content.res.Configuration
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,8 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
@@ -22,27 +16,23 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.SemanticsProperties.ProgressBarRangeInfo
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertPositionInRootIsEqualTo
-import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.assertValueEquals
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performImeAction
-import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.unit.dp
+import com.example.compose.common.RuleSelector
+import com.example.compose.common.TestRuleType
 import org.junit.Rule
 import org.junit.Test
 
-import com.example.compose.common.element_actions
+import org.junit.Before
 
-class FormScreenTest {
+class FormScreenTest1 {
 
     @Composable
     fun ResponsiveLayout() {
@@ -58,9 +48,29 @@ class FormScreenTest {
 //        }
     }
 
+//    @get:Rule
+//    var composeTestRule: createComposeRule()
+
+//    @Before
+//    fun ruleSetUp(){
+//        composeTestRule = RuleSelector().getTestRule(TestRuleType.COMPOSE)
+//    }
 
     @get:Rule
     var rule = createComposeRule()
+
+    @Test
+    fun frameInput(){
+
+        rule.setContent{
+            InputFieldsDemo()
+        }
+        rule.onNodeWithTag("normal_inp")
+            .assertExists()
+            .performTextInput("mmmmmmm")
+    }
+
+
 
     @Test
     fun textField(){

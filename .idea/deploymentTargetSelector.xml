@@ -5,19 +5,19 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="PermissionScreenTest">
+      <SelectionState runConfigName="frameInput() (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="SwipScreenTest">
+      <SelectionState runConfigName="VerifyInputField() (1)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="inputField()">
+      <SelectionState runConfigName="verifyXMLTitle()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="verifySliderInitialValue()">
+      <SelectionState runConfigName="verifyTextElement()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="verifySliderValueOnChange()">
+      <SelectionState runConfigName="XMLScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

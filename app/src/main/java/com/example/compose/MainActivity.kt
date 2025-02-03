@@ -58,7 +58,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
+import com.example.compose.networking.KtorfitInstance
+import com.example.compose.networking.PoliceApiService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : ComponentActivity() {
@@ -244,6 +250,7 @@ fun WebScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun PermissionsScreen() {
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         Toast.makeText(
@@ -252,7 +259,25 @@ fun PermissionsScreen() {
             Toast.LENGTH_LONG
         ).show()
     }
-    Button(onClick = { launcher.launch(Manifest.permission.CAMERA) }, modifier = Modifier.padding(60.dp).testTag("permission_button")) {
+    Button(onClick = {
+//        launcher.launch(Manifest.permission.CAMERA)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val apiService = KtorfitInstance.createApiService<PoliceApiService>()
+                val response = apiService.getStopAndSearchData()
+
+                // Update UI safely inside the Main thread
+                withContext(Dispatchers.Main) {
+                    response.forEach { println(it) }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    println("Error fetching data: ${e.message}")
+                }
+            }
+        }
+
+                     }, modifier = Modifier.padding(60.dp).testTag("permission_button")) {
         Text("Request Camera Permission")
     }
 }
