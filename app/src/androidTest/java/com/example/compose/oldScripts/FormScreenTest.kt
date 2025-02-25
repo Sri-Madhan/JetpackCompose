@@ -1,4 +1,4 @@
-package com.example.compose
+package com.example.compose.oldScripts
 
 
 import androidx.compose.material3.Slider
@@ -17,7 +17,6 @@ import androidx.compose.ui.semantics.SemanticsProperties.ProgressBarRangeInfo
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -25,51 +24,16 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.dp
-import com.example.compose.common.RuleSelector
-import com.example.compose.common.TestRuleType
+import com.example.compose.InputFieldsDemo
+import com.example.compose.ModalsAndPopupsDemo
+import com.example.compose.TextDemo
 import org.junit.Rule
 import org.junit.Test
 
-import org.junit.Before
-
-class FormScreenTest1 {
-
-    @Composable
-    fun ResponsiveLayout() {
-//        val screenWidthDp = LocalConfiguration.current.screenWidthDp
-//
-//        // Layout that adapts based on screen size
-//        if (screenWidthDp < 600) {
-//            // For small screens, use a Column layout
-//            TextDemo(2.dp)
-//        } else {
-//            // For large screens, use a Row layout
-//            TextDemo(166.dp)
-//        }
-    }
-
-//    @get:Rule
-//    var composeTestRule: createComposeRule()
-
-//    @Before
-//    fun ruleSetUp(){
-//        composeTestRule = RuleSelector().getTestRule(TestRuleType.COMPOSE)
-//    }
-
+class FormScreenTest {
+    
     @get:Rule
     var rule = createComposeRule()
-
-    @Test
-    fun frameInput(){
-
-        rule.setContent{
-            InputFieldsDemo()
-        }
-        rule.onNodeWithTag("normal_inp")
-            .assertExists()
-            .performTextInput("mmmmmmm")
-    }
-
 
 
     @Test

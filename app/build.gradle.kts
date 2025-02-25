@@ -1,8 +1,11 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    id("de.jensklingenberg.ktorfit")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -17,6 +20,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    testOptions {
+
     }
 
     buildTypes {
@@ -62,6 +69,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.runner)
     androidTestImplementation(libs.junit)
+//    androidTestImplementation(libs.junit.jupiter)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
@@ -73,12 +81,23 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.web)
     androidTestImplementation(libs.androidx.espresso.core)
 
+//    androidTestImplementation(libs.allure.kotlin.android)
+    androidTestImplementation(libs.allure.junit4)
+
     implementation(libs.ktorfitlib)
-//    implementation(libs.ktorfitksp)
+//    implementation(libs.googleksp)
     implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio)
+//    implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.plugins)
+//    implementation(libs.ktor.client.plugins)
+    implementation(libs.ktor.client.plugins.v302)
+//    implementation(libs.dagger.compiler)
+//    ksp(libs.dagger.compiler)
+
+    implementation (libs.socket.io.client)
+
+    implementation(libs.json)
+
 
 }

@@ -60,11 +60,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import com.example.compose.networking.KtorfitInstance
 import com.example.compose.networking.PoliceApiService
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import org.json.JSONObject
 
 
 class MainActivity : ComponentActivity() {
@@ -96,6 +105,7 @@ fun MyApp() {
             2 -> WebScreen(Modifier.padding(paddingValues))
             3 -> PermissionsScreen()
             4 -> AllComponentsScreen()
+            5-> WebSocketScreen()
         }
     }
 }
@@ -156,6 +166,13 @@ fun BottomNavBar(navController: MutableState<Int>) {
             icon = { Icon(Icons.Default.Build, contentDescription = "Form") },
             label = { Text("Form") },
             modifier = Modifier.testTag("Form")
+        )
+        NavigationBarItem(
+            selected = navController.value == 5,
+            onClick = { navController.value = 5 },
+            icon = { Icon(Icons.Default.Build, contentDescription = "Socket") },
+            label = { Text("Socket") },
+            modifier = Modifier.testTag("Socket")
         )
     }
 }
@@ -260,22 +277,21 @@ fun PermissionsScreen() {
         ).show()
     }
     Button(onClick = {
-//        launcher.launch(Manifest.permission.CAMERA)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val apiService = KtorfitInstance.createApiService<PoliceApiService>()
-                val response = apiService.getStopAndSearchData()
+        launcher.launch(Manifest.permission.CAMERA)
 
-                // Update UI safely inside the Main thread
-                withContext(Dispatchers.Main) {
-                    response.forEach { println(it) }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    println("Error fetching data: ${e.message}")
-                }
-            }
-        }
+//        CoroutineScope(Dispatchers.IO).launch {
+//            try {
+//                val apiService = KtorfitInstance.createPoliceApiService()
+//                val response = apiService.getStopAndSearchData()
+//                withContext(Dispatchers.Main) {
+//                    response.forEach { println(it) }
+//                }
+//            } catch (e: Exception) {
+//                withContext(Dispatchers.Main) {
+//                    println("Error fetching data: ${e.message}")
+//                }
+//            }
+//        }ss
 
                      }, modifier = Modifier.padding(60.dp).testTag("permission_button")) {
         Text("Request Camera Permission")
@@ -751,4 +767,582 @@ fun FormScreen() {
         }
     }
 }
+
+@Composable
+fun PlayWriteSocket(){
+    var text by remember { mutableStateOf("") }
+    var storedText by remember { mutableStateOf("") }
+
+    //val client = remember { OkHttpClient() }
+    //var webSocket by remember { mutableStateOf<WebSocket?>(null) }
+
+    //val wsUrl = "ws://10.0.2.2:9222/devtools/browser/6f0756f5-c61c-4d96-8543-d8299ba02983"
+
+    //52983/3359021b0909de19f15acbb37a07a234
+    //val wsUrl = "ws://10.0.2.2:4000"
+
+    //var sessionId by remember { mutableStateOf<String?>(null) }
+//    LaunchedEffect(Unit) {
+//        val request = Request.Builder().url(wsUrl).build()
+//
+//        webSocket = client.newWebSocket(request, object : WebSocketListener() {
+////            override fun onOpen(webSocket: WebSocket, response: Response) {
+////                println("✅ Connected to Playwright!")
+////
+////                // Open the Playwright website
+//////                val command = """
+//////                {
+//////                    "id": 1,
+//////                    "method": "Target.createTarget",
+//////                    "params": {
+//////                        "url": "https://playwright.dev"
+//////                    }
+//////                }
+//////            """.trimIndent()
+//////
+////            val command = """
+////                {
+////                    "id": 1,
+////                   "method": "Runtime.evaluate",
+////                    "params": {
+////                    "expression": "
+////                    window.runPlaywright = async () => {
+////                    const { chromium } = require('playwright');
+////                    const browser = await chromium.launch();
+////                    const page = await browser.newPage();
+////                    await page.goto('https://playwright.dev');
+////                    await page.click('a[href="/docs/intro"]');
+////                    return 'Click Successful';
+////                };"
+////                }
+////                }
+////            """.trimIndent()
+////
+////                webSocket.send(command);
+////
+////                val command1 = """
+////               {
+////    "id": 2,
+////    "method": "Runtime.callFunctionOn",
+////    "params": {
+////        "functionDeclaration": "window.runPlaywright()",
+////        "executionContextId": 1
+////    }
+////}
+////            """.trimIndent()
+////
+////                webSocket.send(command1);
+////
+////
+////            }
+//
+//            override fun onOpen(webSocket: WebSocket, response: Response) {
+//                println("✅ Connected to Playwright!")
+//
+//                val jsonMessage = JSONObject().apply {
+//                    put("event", "performAction")  // Custom event name
+//                    put("data", JSONObject().apply {
+//                        put("action", "open_url")
+//                        put("selector", "https://playwright.dev")
+//                    })
+//                }.toString()
+//
+//                // Send the message
+//                webSocket.send(jsonMessage)
+////
+////                val command = """{
+////                        "action": "open_url",
+////                        "selector": "https://playwright.dev"
+////                    }""".trimMargin()
+////                webSocket.send(command)
+////
+////                val command1= """{
+////                    "action": "click",
+////                    "selector": "#submit-button"
+////                }"""
+////                webSocket.send(command1)
+//            }
+//
+//            override fun onMessage(webSocket: WebSocket, text: String) {
+//                val json = JSONObject(text)
+//                println("🔹 Message from WebSocket: $json")
+//
+//                if (json.has("id") && json.getInt("id") == 1) {
+//                    val targetId = json.getJSONObject("result").getString("targetId")
+//                    println("📌 Target ID: $targetId")
+//
+//                    // Attach to the target page
+//                    val attachCommand = """
+//                        {
+//                            "id": 3,
+//                            "method": "Target.attachToTarget",
+//                            "params": {
+//                                "targetId": "$targetId",
+//                                "flatten": true
+//                            }
+//                        }
+//                    """.trimIndent()
+//                    webSocket.send(attachCommand)
+//
+//
+//                }
+//
+//                if (json.has("id") && json.getInt("id") == 2) {
+//                    sessionId = json.getJSONObject("result").getString("sessionId")
+//                    println("🔗 Session ID: $sessionId")
+//                }
+//            }
+//            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+//                println( "❌ Connection error: ${t.message}")
+//            }
+//        })
+//    }
+    val serverUrl = "http://13.233.104.203:4000" // Emulator → Use local IP for real devices
+    val options = IO.Options().apply {
+        transports = arrayOf("websocket") // Force WebSocket transport
+        reconnection = true // Auto-reconnect on failure
+    }
+
+    val socket = IO.socket(serverUrl, options)
+    LaunchedEffect(Unit) {
+
+
+        socket.on(Socket.EVENT_CONNECT) {
+            println("✅ Connected to Socket.IO Server!")
+
+            val attachCommand = JSONObject().apply {
+                put("action", "open_url")
+                put("selector", "https://playwright.dev")
+            }
+            socket.emit("performAction", attachCommand)
+            Thread.sleep(3000)
+            val attachCommand1 = JSONObject().apply {
+                put("action", "click")
+                put("selector", "//a[contains(@href, '/docs/intro')]")
+            }
+            socket.emit("performAction", attachCommand1)
+        }
+
+        socket.on("actionResponse") { args ->
+            val response = args[0] as JSONObject
+            println("📩 Server Response: $response")
+        }
+
+        socket.on(Socket.EVENT_DISCONNECT) {
+            println("⚠️ Disconnected from server")
+        }
+
+        socket.on(Socket.EVENT_CONNECT_ERROR) { args ->
+            println("❌ Connection Error: ${args[0]}")
+        }
+
+        socket.connect()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Enter text") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            // https://playwright.dev
+            // click (//a[contains(@href,"/docs/intro")])[1]
+            //  (//a[contains(@href,"/docs/api")])[1]
+            Button(
+                onClick = {
+                    val parts = text.split(" ", limit = 2)
+                    print("testststst:------"+parts)
+                    storedText = text
+                    val attachCommand = JSONObject().apply {
+                        put("action", parts[0])
+                        put("selector", parts[1])
+                    }
+                    socket.emit("performAction", attachCommand)
+
+                },
+//                onClick = {
+//                    if (webSocket != null && sessionId != null) {
+//                        val parts = text.split(" ", limit = 2)
+//                        if (parts.size == 2) {
+////                            val command1 = """
+////                                {
+////                                    "id": 2,
+////                                    "sessionId": "$sessionId",
+////                                    "method": "Runtime.evaluate",
+////                                    "params": {
+////                                        "expression": "window.playwright = require('playwright');"
+////                                    }
+////                                }
+////                            """.trimIndent()
+////                            webSocket?.send(command1)
+//
+//                            val selector = parts[0]
+//                            val action = parts[1]
+//
+//                            val actionCommand = when (action) {
+//                                "click" -> """
+//                                    {
+//                                        "id": 4,
+//                                        "sessionId": "$sessionId",
+//                                        "method": "Runtime.evaluate",
+//                                        "params": {
+//                                            "expression": "document.querySelector('$selector').click()",
+//
+//                                         }
+//                                    }
+//                                """.trimIndent()
+//
+//                                "input" -> """
+//                                    {
+//                                        "id": 5,
+//                                        "sessionId": "$sessionId",
+//                                        "method": "Runtime.evaluate",
+//                                        "params": {
+//                                            "expression": "document.querySelector('$selector').value = 'Hello from Kotlin'"
+//                                        }
+//                                    }
+//                                """.trimIndent()
+//
+//                                else -> null
+//                            }
+//
+//                            if (actionCommand != null) {
+//                                println("📤 Sending Command: $actionCommand")
+//                                webSocket?.send(actionCommand)
+//                                storedText = text
+//                            } else {
+//                                println("❌ Unsupported action: $action")
+//                            }
+//                        } else {
+//                            println("❌ Invalid input format! Use: `selector action` (e.g., `a[href='/docs/intro'] click`)")
+//                        }
+//                    } else {
+//                        println("❌ WebSocket not connected or session not available!")
+//                    }
+//                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Send")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Stored Value: $storedText")
+        }
+    }
+}
+
+@Composable
+fun SocketScreen() {
+    var text by remember { mutableStateOf("") }
+    var storedText by remember { mutableStateOf("") }
+
+    val options = IO.Options().apply {
+        reconnection = true
+        transports = arrayOf("websocket", "polling") // Enable polling fallback
+        secure = false
+        forceNew = true // Ensures a fresh connection
+    }
+
+    val socket: Socket = IO.socket("http://192.168.1.12:3000", options)
+
+    LaunchedEffect(Unit) {
+        socket.on(Socket.EVENT_CONNECT) {
+            println("✅ Socket connected!")
+        }
+
+        socket.on(Socket.EVENT_CONNECT_ERROR) { args ->
+            println("❌ Socket connection error: ${args[0]}")
+        }
+
+        socket.on(Socket.EVENT_DISCONNECT) {
+            println("⚠️ Socket disconnected!")
+            socket.connect()
+        }
+
+        socket.on("message", Emitter.Listener { args ->
+            if (args.isNotEmpty()) {
+                storedText = args[0].toString()
+                println("📩 Received from server: $storedText")
+            }
+        })
+
+        socket.connect()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Enter text") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (!socket.connected()) {
+                        println("SOCKET ❌ Socket not connected. Reconnecting...")
+                        socket.connect()
+                    } else {
+                        socket.emit("message", text)
+                        storedText = text
+                        println("SOCKET 📤 Sent message: $text")
+                    }
+                    storedText = text },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Send")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(text = "Stored Value: $storedText")
+        }
+    }
+}
+
+@Composable
+fun WebSocketScreen1() {
+    lateinit var socket: Socket
+    val socketManager = remember { WebSocketManager() }
+    var selectedAction by remember { mutableStateOf("") }
+    var toastMessage by remember { mutableStateOf<String?>(null) }
+    var selector by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    val actions = listOf("open_url", "click", "type", "scroll", "screenshot")
+
+    LaunchedEffect(Unit) {
+        try {
+            socket = IO.socket("http://10.0.2.2:4000")
+            socket.connect()
+
+            socket.on("actionResponse") { args ->
+                if (args.isNotEmpty()) {
+//                    val response = args[0] as JSONObject
+//                    println("WebSocket Response: ${response.toString(2)}")
+                    if (args.isNotEmpty()) {
+                        val response = args[0] as JSONObject
+                        val status = response.optString("status", "failed")
+                        val message = response.optString("message", "Unknown error")
+
+                        // Set toast message based on response status
+                        toastMessage = if (status == "success") {
+                            "Action successful!"
+                        } else {
+                            "Action failed: $message"
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            println("WebSocket Error connecting: ${e.message}")
+        }
+    }
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text("WebSocket Playwright Client", style = MaterialTheme.typography.titleLarge)
+
+        // Dropdown for actions
+        Box {
+            Button(onClick = { expanded = true }) {
+                Text(if (selectedAction.isEmpty()) "Select Action" else selectedAction)
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                actions.forEach { option ->
+                    DropdownMenuItem(
+                        { Text(option) },
+                        onClick = {
+                        selectedAction = option
+                        expanded = false
+                    })
+                }
+            }
+        }
+
+//        // Input field for selector or URL
+//        OutlinedTextField(
+//            value = ,
+//            onValueChange = { selector = it },
+//            label = { Text("Selector / URL") },
+//            modifier = Modifier.fillMaxWidth(),
+//            keyboardOptions = KeyboardOptions.Default
+//        )
+
+        TextField(
+            value = selector,
+            onValueChange = { selector = it },
+            label = { Text("Enter text") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // Send button
+        Button(
+            onClick = {
+                if (selectedAction.isNotEmpty() && selector.isNotEmpty()) {
+                    //socketManager.sendAction(selectedAction, selector)
+                    val jsonObject = JSONObject()
+                    jsonObject.put("action", selectedAction)
+                    jsonObject.put("selector", selector)
+                    socket.emit("performAction", jsonObject)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = selectedAction.isNotEmpty() && selector.isNotEmpty()
+        ) {
+            Text("Send Command")
+        }
+    }
+}
+
+@Composable
+fun WebSocketScreen() {
+    val context = LocalContext.current
+    val socket = remember { IO.socket("http://10.0.2.2:4000").apply { connect() } }
+    var selectedAction by remember { mutableStateOf("") }
+    var toastMessage by remember { mutableStateOf<String?>(null) }
+    var selector by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    val actions = listOf("open_url", "click", "type", "scroll", "screenshot")
+
+    // WebSocket event listener
+    LaunchedEffect(socket) {
+        socket.on("actionResponse") { args ->
+            if (args.isNotEmpty()) {
+
+                val response = args[0] as JSONObject
+                println(response)
+                val status = response.optString("status", "failed").trim().lowercase()
+                val message = response.optString("message", "Unknown error")
+
+                // Set toast message based on response status
+                toastMessage = if (status == "success") {
+                    "Action successful!"
+                } else {
+                    "Action failed: $message"
+                }
+            }
+        }
+    }
+
+    // Show Toast when message changes
+    toastMessage?.let { message ->
+        LaunchedEffect(message) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+            toastMessage = null
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text("WebSocket Playwright Client", style = MaterialTheme.typography.titleLarge)
+
+        // Dropdown for actions
+        Box {
+            Button(onClick = { expanded = true }) {
+                Text(if (selectedAction.isEmpty()) "Select Action" else selectedAction)
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                actions.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            selectedAction = option
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        // Input field for selector or URL
+        TextField(
+            value = selector,
+            onValueChange = { selector = it },
+            label = { Text("Enter Selector / URL") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // Send button
+        Button(
+            onClick = {
+                if (selectedAction.isNotEmpty() && selector.isNotEmpty()) {
+                    val jsonObject = JSONObject().apply {
+                        put("action", selectedAction)
+                        put("selector", selector)
+                    }
+                    socket.emit("performAction", jsonObject)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = selectedAction.isNotEmpty() && selector.isNotEmpty()
+        ) {
+            Text("Send Command")
+        }
+    }
+}
+
+class WebSocketManager {
+    private lateinit var socket: Socket
+
+    fun connect() {
+        try {
+            socket = IO.socket("http://10.0.2.2:4000")
+            socket.connect()
+
+            socket.on("actionResponse") { args ->
+                if (args.isNotEmpty()) {
+                    val response = args[0] as JSONObject
+                    println("WebSocket Response: ${response.toString(2)}")
+                }
+            }
+        } catch (e: Exception) {
+            println("WebSocket Error connecting: ${e.message}")
+        }
+    }
+
+    fun sendAction(action: String, selector: String) {
+        val jsonObject = JSONObject()
+        jsonObject.put("action", action)
+        jsonObject.put("selector", selector)
+        socket.emit("performAction", jsonObject)
+    }
+
+    fun disconnect() {
+        socket.disconnect()
+    }
+}
+
 

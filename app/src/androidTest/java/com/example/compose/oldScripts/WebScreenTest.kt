@@ -1,4 +1,4 @@
-package com.example.compose
+package com.example.compose.oldScripts
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -9,6 +9,7 @@ import androidx.test.espresso.web.webdriver.DriverAtoms.findElement
 import androidx.test.espresso.web.webdriver.DriverAtoms.getText
 import androidx.test.espresso.web.webdriver.DriverAtoms.webClick
 import androidx.test.espresso.web.webdriver.Locator
+import com.example.compose.WebScreen
 import org.hamcrest.Matchers.containsString
 import org.junit.Rule
 import org.junit.Test

@@ -1,18 +1,23 @@
 package com.example.compose.screens
 
-import androidx.compose.ui.test.junit4.createComposeRule
 import com.example.compose.InputFieldsDemo
+import com.example.compose.common.RuleSelector
+import com.example.compose.common.TestRuleType
 import com.example.compose.common.assertElementExists
 import com.example.compose.common.checkComponentProperties
+import io.qameta.allure.Description
 import org.junit.Rule
 import org.junit.Test
+//import org.junit.jupiter.api.Tag
 
 class FormScreenTest {
 
     @get:Rule
-    var rule = createComposeRule()
+    var rule = RuleSelector().getTestRule(TestRuleType.COMPOSE)
 
     @Test
+//    @Tag("componentTest")
+    @Description("Test to check the component properties")
     fun verifyInputField(){
 
         rule.setContent {

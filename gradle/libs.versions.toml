@@ -1,5 +1,9 @@
 [versions]
 agp = "8.8.0"
+allureJunit4 = "2.28.1"
+allureKotlinAndroid = "2.9.0"
+daggerCompiler = "2.51.1"
+json = "20210307"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -7,7 +11,9 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 ktorClientCore = "2.3.12"
 ktorClientPlugins = "2.3.8"
+ktorClientPluginsVersion = "3.0.2"
 ktorfitVersion = "2.2.0"
+ktrofitksplib ="2.2.0-1.0.29"
 ktorKtorClientCio = "2.3.8"
 ktorKtorClientContentNegotiation = "2.3.12"
 ktorSerializationKotlinxJson = "2.3.12"
@@ -20,13 +26,19 @@ mockkAndroid = "1.12.0"
 rules = "1.6.1"
 runner = "1.6.1"
 recyclerview = "1.4.0"
+socketIoClient = "2.0.0"
 uiTestJunit4Android = "1.7.7"
+junitJupiter = "5.8.1"
 
 [libraries]
+allure-junit4 = { module = "io.qameta.allure:allure-junit4", version.ref = "allureJunit4" }
+#allure-kotlin-android = { module = "io.qameta.allure:allure-kotlin-android", version.ref = "allureKotlinAndroid" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-espresso-web = { module = "androidx.test.espresso:espresso-web", version.ref = "espressoCore" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerCompiler" }
+json = { module = "org.json:json", version.ref = "json" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -44,6 +56,7 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorKtorC
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorKtorClientContentNegotiation" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
 ktor-client-plugins = { module = "io.ktor:ktor-client-plugins", version.ref = "ktorClientPlugins" }
+ktor-client-plugins-v302 = { module = "io.ktor:ktor-client-plugins", version.ref = "ktorClientPluginsVersion" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 ktorfit = { module = "de.jensklingenberg.ktorfit:ktorfit", version.ref = "ktorfitVersion" }
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
@@ -51,8 +64,11 @@ mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
 androidx-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 ktorfitlib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfitVersion" }
-ktorfitksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfitVersion" }
+ktorfitksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktrofitksplib" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+socket-io-client = { module = "io.socket:socket.io-client", version.ref = "socketIoClient" }
+#googleksp = { module = "com.google.devtools.ksp:2.1.0-1.0.29" }
+#junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 #androidx-ui-test-junit4-android = { group = "androidx.compose.ui", name = "ui-test-junit4-android", version.ref = "uiTestJunit4Android" }
 
 

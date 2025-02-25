@@ -1,14 +1,9 @@
 package com.example.compose.common
 
 import androidx.compose.ui.test.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import org.junit.Rule
-import androidx.test.core.app.ActivityScenario
-import com.example.compose.MainActivity
 
 
-// This function now accepts a test rule as a parameter
 fun ComposeTestRule.findElement(
     identifier: String,
     byText: Boolean = false,
@@ -23,7 +18,6 @@ fun ComposeTestRule.findElement(
     }
 }
 
-// Function to assert that an element exists
 fun ComposeTestRule.assertElementExists(
     identifier: String,
     byText: Boolean = false,

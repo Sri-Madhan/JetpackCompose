@@ -1,8 +1,10 @@
-package com.example.compose
+package com.example.compose.oldScripts
 
 import android.widget.Button
 import android.widget.TextView
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import com.example.compose.MainActivity
+import com.example.compose.R
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
